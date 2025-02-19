@@ -4,7 +4,30 @@ const Heading = ({ title }) => <h1>{title}</h1>
 
 const Button = ({ feedback, onClick}) => <button onClick={onClick}>{feedback}</button>
 
-const Details = ({ field, value }) => <p>{field} {value}</p>
+const StatisticLine = ({ text, value }) => <p>{text} {value}</p>
+
+const Statistics = ({ good, neutral, bad }) => {
+  const total = good + neutral + bad
+  const average = total / 3
+  const positive = (good / total) * 100
+
+  return (
+    <>
+      <Heading title="Statistics"/>
+      { (good == 0 && neutral == 0 && bad == 0) ?
+        <p>No feedback given</p> :
+        <div>
+          <StatisticLine text="Good" value={good}/>
+          <StatisticLine text="Neutral" value={neutral}/>
+          <StatisticLine text="Bad" value={bad}/>
+          <StatisticLine text="Total" value={total}/>
+          <StatisticLine text="Average" value={average}/>
+          <StatisticLine text="Positive" value={`${positive} %`}/>
+        </div>
+      }
+    </>
+  )
+}
 
 const App = () => {
   const [good, setGood] = useState(0)
@@ -14,9 +37,6 @@ const App = () => {
   const handleClickGood = () => setGood(good + 1)
   const handleClickNeutral = () => setNeutral(neutral + 1)
   const handleClickBad = () => setBad(bad + 1)
-  const total = good + neutral + bad
-  const average = total / 3
-  const positive = (good / total) * 100
 
   return (
     <div>
@@ -24,13 +44,8 @@ const App = () => {
       <Button feedback="good" onClick={handleClickGood} />
       <Button feedback="neutral" onClick={handleClickNeutral}/>
       <Button feedback="bad" onClick={handleClickBad}/>
-      <Heading title="Statistics"/>
-      <Details field="Good" value={good}/>
-      <Details field="Neutral" value={neutral}/>
-      <Details field="Bad" value={bad}/>
-      <Details field="Total" value={total}/>
-      <Details field="Average" value={average}/>
-      <Details field="Positive" value={`${positive} %`}/>
+      <Statistics good={good} neutral={neutral} bad={bad}/>
+
     </div>
   )
 }
