@@ -4,26 +4,35 @@ const Heading = ({ title }) => <h1>{title}</h1>
 
 const Button = ({ feedback, onClick}) => <button onClick={onClick}>{feedback}</button>
 
-const StatisticLine = ({ text, value }) => <p>{text} {value}</p>
+const StatisticLine = ({ text, value }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  )
+}
 
 const Statistics = ({ good, neutral, bad }) => {
   const total = good + neutral + bad
-  const average = total / 3
-  const positive = (good / total) * 100
+  const average = (total / 3).toFixed(2)
+  const positive = ((good / total) * 100).toFixed(2)
 
   return (
     <>
       <Heading title="Statistics"/>
       { (good == 0 && neutral == 0 && bad == 0) ?
         <p>No feedback given</p> :
-        <div>
-          <StatisticLine text="Good" value={good}/>
-          <StatisticLine text="Neutral" value={neutral}/>
-          <StatisticLine text="Bad" value={bad}/>
-          <StatisticLine text="Total" value={total}/>
-          <StatisticLine text="Average" value={average}/>
-          <StatisticLine text="Positive" value={`${positive} %`}/>
-        </div>
+        <table>
+          <tbody>
+            <StatisticLine text="Good" value={good}/>
+            <StatisticLine text="Neutral" value={neutral}/>
+            <StatisticLine text="Bad" value={bad}/>
+            <StatisticLine text="Total" value={total}/>
+            <StatisticLine text="Average" value={average}/>
+            <StatisticLine text="Positive" value={`${positive} %`}/>
+          </tbody>
+        </table>
       }
     </>
   )
