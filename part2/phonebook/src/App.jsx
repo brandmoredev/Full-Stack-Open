@@ -12,6 +12,14 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    const nameExists = persons.some(person => person.name.toLocaleLowerCase() === newName.toLocaleLowerCase());
+
+    if (nameExists) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+
     setPersons(persons.concat({ name: newName }))
     setNewName('')
   }
