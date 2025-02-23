@@ -55,6 +55,22 @@ const App = () => {
             setNewName('')
             setNewNumber('')
           })
+          .catch(() => {
+            setNoficiationMessage({
+              content: `Information of ${newName} has already been removed from server`,
+              type: 'error'
+            })
+            setPersons(persons.filter(person => person.name !== newName))
+            setNewName('')
+            setNewNumber('')
+            setTimeout(() => {
+              setNoficiationMessage({
+                content: null,
+                type: null
+              })
+            }
+            , 5000)
+          })
       }
       return
     }
