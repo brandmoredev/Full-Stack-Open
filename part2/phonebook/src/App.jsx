@@ -3,13 +3,17 @@ import Filter from './FilterName'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
 import phonebook from './services/phonebook'
-
+import Notification from './Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [notificationMessage, setNoficiationMessage] = useState({
+    content: null,
+    type: null
+  })
 
   useEffect(() => {
     phonebook
@@ -58,9 +62,20 @@ const App = () => {
     phonebook
       .create({ name: newName, number: newNumber})
       .then(returnedData => {
+        setNoficiationMessage({
+          content: `Added ${returnedData.name}`,
+          type: 'success'
+        })
         setPersons(persons.concat(returnedData))
         setNewName('')
         setNewNumber('')
+        setTimeout(() => {
+          setNoficiationMessage({
+            content: null,
+            type: null
+          })
+        }
+        , 5000)
       })
 
   }
@@ -80,6 +95,8 @@ const App = () => {
 
   return (
     <div>
+      <h2>Phonebook</h2>
+      <Notification message={notificationMessage}/>
       <Filter filterName={filterName} onFilterChange={handleInputFilterChange}/>
       <PersonForm
         onClick={handleSubmit}
