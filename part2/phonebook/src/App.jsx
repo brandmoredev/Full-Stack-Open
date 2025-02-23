@@ -52,6 +52,19 @@ const App = () => {
 
   }
 
+  const handleDelete = (id) => {
+    const person = persons.find(person => person.id === id)
+    const confirmDelete = window.confirm(`Delete ${person.name} ?`)
+
+    if (confirmDelete) {
+      phonebook
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
   return (
     <div>
       <Filter filterName={filterName} onFilterChange={handleInputFilterChange}/>
@@ -62,7 +75,7 @@ const App = () => {
         handleInputNameChange={handleInputNameChange}
         handleInputNumberChange={handleInputNumberChange}
       />
-      <Persons persons={persons} filterName={filterName}/>
+      <Persons persons={persons} filterName={filterName} onDelete={handleDelete}/>
     </div>
   )
 }
