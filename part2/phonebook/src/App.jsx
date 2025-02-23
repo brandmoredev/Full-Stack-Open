@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './FilterName'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
-import axios from 'axios'
+import phonebook from './services/phonebook'
 
 
 const App = () => {
@@ -12,10 +12,10 @@ const App = () => {
   const [filterName, setFilterName] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    phonebook
+      .getAll()
+      .then(initialPhonebook => {
+        setPersons(initialPhonebook)
       })
   }
   , [])
@@ -42,9 +42,14 @@ const App = () => {
       return
     }
 
-    setPersons(persons.concat({ name: newName, number: newNumber}))
-    setNewName('')
-    setNewNumber('')
+    phonebook
+      .create({ name: newName, number: newNumber})
+      .then(returnedData => {
+        setPersons(persons.concat(returnedData))
+        setNewName('')
+        setNewNumber('')
+      })
+
   }
 
   return (
