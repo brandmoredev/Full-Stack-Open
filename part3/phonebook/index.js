@@ -1,6 +1,9 @@
 const express = require('express');
+const morgan = require('morgan');
+
 const app = express();
 app.use(express.json());
+app.use(morgan('tiny'));
 
 let phonebook = [
   { 
@@ -24,6 +27,18 @@ let phonebook = [
     "number": "39-23-6423122"
   }
 ]
+
+// LOGGER MIDDLEWARE - CUSTOM TOKEN
+morgan.token('post-data', (request, response) => {
+  const method = request.method;
+
+  if (method === 'POST') {
+    return JSON.stringify(request.body)
+  }
+  return
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'));
 
 // GET ALL PERSONS
 app.get('/api/persons', (request, response) => {
