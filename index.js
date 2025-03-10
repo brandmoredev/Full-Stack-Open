@@ -100,7 +100,7 @@ app.post('/api/persons', (request, response) => {
   }
 
   const person = {
-    id: generateId(),
+    id: generateId().toString(), //Makes the Id type compatible with the data
     name: body.name,
     number: body.number
   }
