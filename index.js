@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
@@ -6,28 +8,7 @@ app.use(express.static('dist'));
 app.use(express.json());
 app.use(morgan('tiny'));
 
-let phonebook = [
-  { 
-    "id": "1",
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": "2",
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": "3",
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": "4",
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
+const Phonebook = require('./models/phonebook')
 
 // LOGGER MIDDLEWARE - CUSTOM TOKEN
 morgan.token('post-data', (request, response) => {
@@ -43,8 +24,9 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :p
 
 // GET ALL PERSONS
 app.get('/api/persons', (request, response) => {
-  console.log('GET request received');
-  response.json(phonebook);
+  Phonebook.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 // GET PHONEBOOK INFO
@@ -109,7 +91,7 @@ app.post('/api/persons', (request, response) => {
   response.json(person);
 })
 
-const PORT = process.env.port | 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 })
