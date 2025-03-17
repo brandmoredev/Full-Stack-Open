@@ -74,21 +74,21 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (body.name && phonebook.find(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
+  // if (body.name && phonebook.find(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())) {
+  //   return response.status(400).json({
+  //     error: 'name must be unique'
+  //   })
+  // }
 
-  const person = {
-    id: generateId().toString(), //Makes the Id type compatible with the data
+  const person = new Phonebook({
     name: body.name,
     number: body.number
-  }
+  })
 
-  phonebook = phonebook.concat(person)
-
-  response.json(person);
+  person.save().then(result => {
+    console.log('Added new phonebook')
+    response.json(result);
+  })
 })
 
 const PORT = process.env.PORT;
