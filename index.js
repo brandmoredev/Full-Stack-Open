@@ -8,7 +8,7 @@ app.use(express.static('dist'));
 app.use(express.json());
 app.use(morgan('tiny'));
 
-const { default: next } = require('next');
+// const { default: next } = require('next');
 const Phonebook = require('./models/phonebook');
 
 // LOGGER MIDDLEWARE - CUSTOM TOKEN
