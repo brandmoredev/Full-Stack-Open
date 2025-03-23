@@ -93,6 +93,22 @@ const App = () => {
         }
         , 5000)
       })
+      .catch(error => {
+        console.log(error.response.data.error);
+        
+        setNoficiationMessage({
+          content: error.response.data.error,
+          type: 'error'
+        })
+
+        setTimeout(() => {
+          setNoficiationMessage({
+            content: null,
+            type: null
+          })
+        }
+        , 5000)
+      })
 
   }
 
