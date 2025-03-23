@@ -89,8 +89,7 @@ app.post('/api/persons', (request, response, next) => {
         number
       }
     },
-    { runValidators: true, context: 'query' },
-    { new: true, upsert: true}
+    { runValidators: true, new: true, upsert: true}
   )
   .then(result => {
     return response.json(result)
