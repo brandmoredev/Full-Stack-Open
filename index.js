@@ -1,19 +1,19 @@
 require('dotenv').config()
 
-const express = require('express');
-const morgan = require('morgan');
-const app = express();
+const express = require('express')
+const morgan = require('morgan')
+const app = express()
 
-app.use(express.static('dist'));
-app.use(express.json());
-app.use(morgan('tiny'));
+app.use(express.static('dist'))
+app.use(express.json())
+app.use(morgan('tiny'))
 
 // const { default: next } = require('next');
-const Phonebook = require('./models/phonebook');
+const Phonebook = require('./models/phonebook')
 
 // LOGGER MIDDLEWARE - CUSTOM TOKEN
-morgan.token('post-data', (request, response) => {
-  const method = request.method;
+morgan.token('post-data', (request) => {
+  const method = request.method
   
   if (method === 'POST') {
     return JSON.stringify(request.body)
@@ -21,7 +21,7 @@ morgan.token('post-data', (request, response) => {
   return
 })
 
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 
 // GET ALL PERSONS
 app.get('/api/persons', (request, response) => {
@@ -34,33 +34,33 @@ app.get('/api/persons', (request, response) => {
 app.get('/info', (request, response) => {
   Phonebook.countDocuments({})
     .then(count => {
-      const date = new Date();
-      response.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`);
+      const date = new Date()
+      response.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`)
     })
 
 })
 
 // GET PHONEBOOK ENTRY BY ID
 app.get('/api/persons/:id', (request, response, next) => {
-  const id =  request.params.id;
+  const id =  request.params.id
 
   Phonebook.findById(id)
     .then(person => {
       if (!person) {
-        response.status(404).end();
+        response.status(404).end()
       }
 
-      response.json(person);
+      response.json(person)
     })
     .catch(error => next(error))
 })
 
 // DELETE PHONEBOOK ENTRY BY ID
 app.delete('/api/persons/:id', (request, response, next) => {
-  const id = request.params.id;
+  const id = request.params.id
 
   Phonebook.findByIdAndDelete(id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -68,12 +68,12 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 
 // POST NEW PHONEBOOK ENTRY
-const generateId = () => {
-  return Math.floor(Math.random() * 1000000000);
-}
+// const generateId = () => {
+//   return Math.floor(Math.random() * 1000000000)
+// }
 
 app.post('/api/persons', (request, response, next) => {
-  const { name, number } = request.body;
+  const { name, number } = request.body
 
   if (!name || !number) {
     return response.status(400).json({
@@ -91,10 +91,10 @@ app.post('/api/persons', (request, response, next) => {
     },
     { runValidators: true, new: true, upsert: true}
   )
-  .then(result => {
-    return response.json(result)
-  })
-  .catch(error => next(error))
+    .then(result => {
+      return response.json(result)
+    })
+    .catch(error => next(error))
 
   // if (name && Phonebook.find(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())) {
   //   return response.status(400).json({
@@ -103,13 +103,13 @@ app.post('/api/persons', (request, response, next) => {
   // }
 })
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`)
 })
 
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint"})
+  response.status(404).send({ error: 'unknown endpoint'})
 }
 
 app.use(unknownEndpoint)
