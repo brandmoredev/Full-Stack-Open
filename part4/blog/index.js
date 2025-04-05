@@ -11,6 +11,7 @@ const blogSchema = new mongoose.Schema({
   likes: Number
 })
 
+console.log('TEST')
 const Blog = mongoose.model('Blog', blogSchema)
 
 
