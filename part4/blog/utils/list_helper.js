@@ -1,4 +1,5 @@
 const dummy = (blogs) => {
+  blogs
   return 1
 }
 
@@ -27,8 +28,35 @@ const favoriteBlog = (blogs) => {
   return mostLikedBlog
 }
 
+const mostBlogs = (blogs) => {
+  const authorBlogCounts = []
+
+  blogs.forEach(blog => {
+    const authorBlog = authorBlogCounts?.find(authorBlog => authorBlog.author === blog.author)
+
+    if (!authorBlog) {
+      authorBlogCounts.push({
+        author: blog.author,
+        blogs: 1
+      })
+    } else {
+      const index = authorBlogCounts.indexOf(authorBlog)
+      authorBlogCounts[index] = { ...authorBlog, blogs: authorBlog.blogs + 1 }
+    }
+  })
+
+  const maxBlog = Math.max(...authorBlogCounts.map(authorBlog => {
+    return authorBlog.blogs
+  }))
+
+  const mostAuthor = authorBlogCounts.find(authorBLog => authorBLog.blogs === maxBlog)
+
+  return mostAuthor
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
