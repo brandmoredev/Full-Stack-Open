@@ -33,3 +33,9 @@ test('there are two blogs', async () => {
 
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
+
+test('unique identifier is named "id"', async () => {
+  const response = await api.get('/api/blogs')
+
+  assert(Object.keys(response.body[0]).includes('id'))
+})
