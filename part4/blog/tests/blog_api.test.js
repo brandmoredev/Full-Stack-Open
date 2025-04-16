@@ -39,3 +39,25 @@ test('unique identifier is named "id"', async () => {
 
   assert(Object.keys(response.body[0]).includes('id'))
 })
+
+test('a valid blog can be added', async () => {
+  const newBlog ={
+    title: 'New Blog Test',
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+    likes: 7,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const contents = response.body.map(r => r.title)
+
+  assert.strictEqual(response.body.length, helper.initialBlogs.length + 1)
+  assert(contents.includes('New Blog Test'))
+})
