@@ -81,3 +81,37 @@ test('sets likes to 0 if like property is missing on post', async () => {
 
   assert.strictEqual(likes[2], 0)
 })
+
+test('sets status to 400 if title property is missing on post', async () => {
+  const newBlog ={
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api.get('/api/blogs')
+
+  assert.strictEqual(response.body.length, 2)
+})
+
+test('sets status to 400 if url property is missing on post', async () => {
+  const newBlog ={
+    title: 'New Blog Test',
+    author: 'Michael Chan',
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api.get('/api/blogs')
+
+  assert.strictEqual(response.body.length, 2)
+})
