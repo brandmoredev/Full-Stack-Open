@@ -115,3 +115,58 @@ test('sets status to 400 if url property is missing on post', async () => {
 
   assert.strictEqual(response.body.length, 2)
 })
+
+test('delete succeeds with a status of 204 if id is valid', async () => {
+  const blogAtStart = await helper.blogsInDb()
+  const blogToDelete = blogAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  const titles = blogsAtEnd.map(b => b.title)
+  assert(!titles.includes(blogToDelete.title))
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+
+test('update blog fails with a status of 404 if id is invalid', async () => {
+  const nonExistingId = await helper.nonExistingId()
+  const updatedBlog = {
+    title: 'New Title',
+    author: 'John Doe',
+    url: 'www.test.com',
+    likes: 5
+  }
+
+  await api
+    .put(`/api/blogs/${nonExistingId}`)
+    .send(updatedBlog)
+    .expect(404)
+})
+
+test('update suceeds with if updated properties are valid', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+
+  const updatedBlogId = blogsAtStart[0].id
+
+  const updatedFirstBlog = {
+    title: 'New Title - Valid Length',
+    author: 'John Doe',
+    url: 'www.test.com',
+    likes: 5
+  }
+
+  await api
+    .put(`/api/blogs/${updatedBlogId}`)
+    .send(updatedFirstBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  assert.strictEqual(blogsAtEnd[0].title, updatedFirstBlog.title)
+})
