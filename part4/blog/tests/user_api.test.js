@@ -62,6 +62,35 @@ describe('when there is initially one user in db', () => {
   })
 })
 
+describe('when logging in', () => {
+  test('login fails if username is missing', async() => {
+    const loginCredentials = {
+      password: 'testpassword'
+    }
+
+    const result = await api
+      .post('/api/login')
+      .send(loginCredentials)
+      .expect(401)
+
+    assert(result.body.error.includes('invalid username or password'))
+  })
+
+  test('login fails if password is incorrect', async() => {
+    const loginCredentials = {
+      username: 'testusername',
+      password: 'wrongpassword'
+    }
+
+    const result = await api
+      .post('/api/login')
+      .send(loginCredentials)
+      .expect(401)
+
+    assert(result.body.error.includes('invalid username or password'))
+  })
+})
+
 after(async () => {
   mongoose.connection.close()
 })
