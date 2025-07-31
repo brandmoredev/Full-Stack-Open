@@ -1,6 +1,7 @@
-const { test, beforeEach, after } = require('node:test')
+const { test, beforeEach, after, before } = require('node:test')
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('../tests/test_helper')
 const supertest = require('supertest')
 const app = require('../app')
@@ -8,11 +9,32 @@ const assert = require('node:assert')
 
 const api = supertest(app)
 
+const testUser = {
+  username: 'testuser',
+  name: 'Test User',
+  password: 'testpassword'
+}
+
+let token
+
+before(async () => {
+  await User.deleteMany({})
+  await api.post('/api/users').send(testUser)
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({ username: testUser.username, password: testUser.password })
+
+  token = loginResponse.body.token
+})
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
+  const user = await User.findOne({ username: testUser.username })
+
   for (let blog of helper.initialBlogs) {
-    let blogObject = new Blog(blog)
+    let blogObject = new Blog({ ...blog, user: user._id })
     await blogObject.save()
   }
 })
@@ -22,10 +44,6 @@ test('blogs are returned as json', async () => {
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
-})
-
-after(async () => {
-  await mongoose.connection.close()
 })
 
 test('there are two blogs', async () => {
@@ -50,6 +68,7 @@ test('a valid blog can be added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -71,6 +90,7 @@ test('sets likes to 0 if like property is missing on post', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -91,6 +111,7 @@ test('sets status to 400 if title property is missing on post', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 
@@ -108,6 +129,7 @@ test('sets status to 400 if url property is missing on post', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 
@@ -122,6 +144,7 @@ test('delete succeeds with a status of 204 if id is valid', async () => {
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
 
   const blogsAtEnd = await helper.blogsInDb()
@@ -169,4 +192,8 @@ test('update suceeds with if updated properties are valid', async () => {
   const blogsAtEnd = await helper.blogsInDb()
 
   assert.strictEqual(blogsAtEnd[0].title, updatedFirstBlog.title)
+})
+
+after(async () => {
+  await mongoose.connection.close()
 })
