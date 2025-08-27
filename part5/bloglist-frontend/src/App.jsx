@@ -1,21 +1,31 @@
 import { useState, useEffect } from 'react'
+import './App.css'
+import Notification from './components/Notification'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from './components/BlogForm'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState({})
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem('loggedUser')
     if (loggedUser) {
-      setUser(JSON.parse(loggedUser))
+      const user = JSON.parse(loggedUser)
+      setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
-  
+
   useEffect(() => {
     const fetchBlogs = async () => {
       const blogs = await blogService.getAll()
@@ -30,13 +40,27 @@ const App = () => {
     loginService.login({ username, password })
       .then(user => {
         setUser(user)
+        blogService.setToken(user.token)
         window.localStorage.setItem('loggedUser', JSON.stringify(user))
+
         setUsername('')
         setPassword('')
+        setNotificationMessage({
+          type: 'success',
+          message: 'Successfully logged in'
+        })
+
       })
       .catch(error => {
-        console.error('Login failed:', error)
+        setNotificationMessage({
+          type: 'error',
+          message: error.response.data.error
+        })
       })
+
+    setTimeout(() => {
+      setNotificationMessage({})
+    }, 5000)
   }
 
 
@@ -65,9 +89,8 @@ const App = () => {
     </form>
   )
 
-  const Blogs = () => (
+  const blogList = () => (
     <div>
-      <p>{user.name} logged in</p>
       <h2>blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
@@ -75,9 +98,28 @@ const App = () => {
     </div>
   )
 
+
   return (
     <div>
-      {user === null ? loginForm() : Blogs()}
+      <Notification type={notificationMessage.type} message={notificationMessage.message} />
+      {user === null ?
+        loginForm() : 
+        <>
+          <p>{user.name} logged in</p>
+          <BlogForm
+            blogs={blogs}
+            setBlogs={setBlogs}
+            title={title}
+            setTitle={setTitle}
+            author={author}
+            setAuthor={setAuthor}
+            url={url}
+            setUrl={setUrl}
+            setNotificationMessage={setNotificationMessage}
+          />
+          {blogList()}
+        </>
+      }
     </div>
   )
 }
