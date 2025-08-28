@@ -5,6 +5,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 
 
 const App = () => {
@@ -12,9 +13,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [notificationMessage, setNotificationMessage] = useState({})
 
   useEffect(() => {
@@ -63,6 +61,26 @@ const App = () => {
     }, 5000)
   }
 
+  const addBlog = (blogObject) => {
+    blogService.create(blogObject)
+      .then(newBlog => {
+        setBlogs(blogs.concat(newBlog))
+        setNotificationMessage({
+          type: 'success',
+          message: `A new blog '${newBlog.title}' by ${newBlog.author} added`
+        })
+      })
+      .catch(() => {
+        setNotificationMessage({
+          type: 'error',
+          message: 'Something went wrong'
+        })
+      })
+
+    setTimeout(() => {
+      setNotificationMessage({})
+    }, 5000)
+  }
 
   const loginForm = () => (
     <form>
@@ -98,6 +116,14 @@ const App = () => {
     </div>
   )
 
+  const blogForm = () => (
+    <Togglable buttonLabel="new blog">
+      <BlogForm
+        createBlog={addBlog}
+      />
+    </Togglable>
+  )
+
 
   return (
     <div>
@@ -106,17 +132,7 @@ const App = () => {
         loginForm() : 
         <>
           <p>{user.name} logged in</p>
-          <BlogForm
-            blogs={blogs}
-            setBlogs={setBlogs}
-            title={title}
-            setTitle={setTitle}
-            author={author}
-            setAuthor={setAuthor}
-            url={url}
-            setUrl={setUrl}
-            setNotificationMessage={setNotificationMessage}
-          />
+          {blogForm()}
           {blogList()}
         </>
       }

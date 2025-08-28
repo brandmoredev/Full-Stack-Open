@@ -1,31 +1,14 @@
-import blogService from '../services/blogs'
+import { useState } from 'react'
 
-const BlogForm = ({ title, setTitle, author, setAuthor, url, setUrl, setNotificationMessage, blogs, setBlogs }) => {
+
+const BlogForm = ({ createBlog }) => {
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
   const handleCreate = (e) => {
     e.preventDefault()
-
-    blogService.create({ title, author, url })
-      .then(newBlog => {
-        setBlogs(blogs.concat(newBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-
-        setNotificationMessage({
-          type: 'success',
-          message: `A new blog '${newBlog.title}' by ${newBlog.author} added`
-        })
-      })
-      .catch(() => {
-        setNotificationMessage({
-          type: 'error',
-          message: 'Something went wrong'
-        })
-      })
-
-      setTimeout(() => {
-        setNotificationMessage({})
-      }, 5000)
+    createBlog({ title, author, url })
   }
 
   return (
