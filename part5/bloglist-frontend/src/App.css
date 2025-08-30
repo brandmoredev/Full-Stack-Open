@@ -6,6 +6,8 @@
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+  position: sticky;
+  top: 10px;
 }
 
 .success {
@@ -16,4 +18,6 @@
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+  position: sticky;
+  top: 10px;
 }

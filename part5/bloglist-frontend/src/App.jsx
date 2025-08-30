@@ -89,14 +89,12 @@ const App = () => {
 
   const updateBlog = (id, updatedBlog) => {
     blogService.update(id, updatedBlog)
-      .then(updatedBlog => {
-        updatedBlog = {
-          ...updatedBlog,
-          user: {
-            name: user.name
-          }
-        }
-        setBlogs(blogs.map(blog => blog.id === id ? updatedBlog : blog))
+      .then(() => {
+        setBlogs(blogs.map(blog =>
+          blog.id === id
+          ? { ...blog, likes: updatedBlog.likes }
+          : blog
+        ))
         setNotificationMessage({
           type: 'success',
           message: `Blog '${updatedBlog.title}' updated`
@@ -108,6 +106,31 @@ const App = () => {
           message: 'Something went wrong'
         })
       })
+
+      setTimeout(() => {
+        setNotificationMessage({})
+      }, 5000)
+  }
+
+  const deleteBlog = (id) => {
+    blogService.remove(id)
+      .then(() => {
+        setBlogs(blogs.filter(blog => blog.id !== id))
+        setNotificationMessage({
+          type: 'success',
+          message: `Blog removed`
+        })
+      })
+      .catch(() => {
+        setNotificationMessage({
+          type: 'error',
+          message: 'Something went wrong'
+        })
+      })
+
+      setTimeout(() => {
+        setNotificationMessage({})
+      }, 5000)
   }
 
   const loginForm = () => (
@@ -138,11 +161,15 @@ const App = () => {
   const blogList = () => (
     <div>
       <h2>blogs</h2>
-      {blogs.map(blog =>
+      {blogs
+      .sort((a, b) => b.likes - a.likes)
+      .map(blog =>
         <Blog
           key={blog.id}
           blog={blog}
           updateBlog={updateBlog}
+          deleteBlog={deleteBlog}
+          user={user}
         />
       )}
     </div>
