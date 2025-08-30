@@ -90,6 +90,12 @@ const App = () => {
   const updateBlog = (id, updatedBlog) => {
     blogService.update(id, updatedBlog)
       .then(updatedBlog => {
+        updatedBlog = {
+          ...updatedBlog,
+          user: {
+            name: user.name
+          }
+        }
         setBlogs(blogs.map(blog => blog.id === id ? updatedBlog : blog))
         setNotificationMessage({
           type: 'success',
