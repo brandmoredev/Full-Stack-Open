@@ -52,5 +52,4 @@ const BlogForm = ({ createBlog }) => {
   )
 }
 
-  export default BlogForm
-  
+export default BlogForm

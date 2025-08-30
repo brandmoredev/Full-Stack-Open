@@ -65,14 +65,14 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     blogService.create(blogObject)
-    .then(newBlog => {
-      setBlogs(blogs.concat(newBlog))
-      setNotificationMessage({
-        type: 'success',
-        message: `A new blog '${newBlog.title}' by ${newBlog.author} added`
-      })
-      
-      blogFormRef.current.toggleVisibility()
+      .then(newBlog => {
+        setBlogs(blogs.concat(newBlog))
+        setNotificationMessage({
+          type: 'success',
+          message: `A new blog '${newBlog.title}' by ${newBlog.author} added`
+        })
+
+        blogFormRef.current.toggleVisibility()
       })
       .catch(() => {
         setNotificationMessage({
@@ -91,9 +91,7 @@ const App = () => {
     blogService.update(id, updatedBlog)
       .then(() => {
         setBlogs(blogs.map(blog =>
-          blog.id === id
-          ? { ...blog, likes: updatedBlog.likes }
-          : blog
+          blog.id === id ? { ...blog, likes: updatedBlog.likes } : blog
         ))
         setNotificationMessage({
           type: 'success',
@@ -107,9 +105,9 @@ const App = () => {
         })
       })
 
-      setTimeout(() => {
-        setNotificationMessage({})
-      }, 5000)
+    setTimeout(() => {
+      setNotificationMessage({})
+    }, 5000)
   }
 
   const deleteBlog = (id) => {
@@ -118,7 +116,7 @@ const App = () => {
         setBlogs(blogs.filter(blog => blog.id !== id))
         setNotificationMessage({
           type: 'success',
-          message: `Blog removed`
+          message: 'Blog removed'
         })
       })
       .catch(() => {
@@ -128,9 +126,9 @@ const App = () => {
         })
       })
 
-      setTimeout(() => {
-        setNotificationMessage({})
-      }, 5000)
+    setTimeout(() => {
+      setNotificationMessage({})
+    }, 5000)
   }
 
   const loginForm = () => (
@@ -162,16 +160,16 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {blogs
-      .sort((a, b) => b.likes - a.likes)
-      .map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          updateBlog={updateBlog}
-          deleteBlog={deleteBlog}
-          user={user}
-        />
-      )}
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog =>
+          <Blog
+            key={blog.id}
+            blog={blog}
+            updateBlog={updateBlog}
+            deleteBlog={deleteBlog}
+            user={user}
+          />
+        )}
     </div>
   )
 
@@ -188,7 +186,7 @@ const App = () => {
     <div>
       <Notification type={notificationMessage.type} message={notificationMessage.message} />
       {user === null ?
-        loginForm() : 
+        loginForm() :
         <>
           <p>{user.name} logged in</p>
           {blogForm()}
