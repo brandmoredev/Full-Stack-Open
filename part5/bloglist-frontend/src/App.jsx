@@ -39,6 +39,7 @@ const App = () => {
 
     loginService.login({ username, password })
       .then(user => {
+        console.log(user)
         setUser(user)
         blogService.setToken(user.token)
         window.localStorage.setItem('loggedUser', JSON.stringify(user))
